@@ -4,7 +4,7 @@
 #suign parameter 'Max', 'Min', 'Mean', 'Skewness', 'Kurtosis' , 'Standard
 #Deviation'
 
-dir <- "~/Sanchay Bapat's Project/"
+dir <- "~/Fault_Proj/"
 data.train <- read.csv(paste0(dir,"train.csv"))
 data.test <- read.csv(paste0(dir,"test.csv"))
 data.train <- data.train[,1:7]
