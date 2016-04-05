@@ -1,0 +1,14 @@
+Objective:- To understand working of twitter API and exploiting R’s built in package “twitterR” for parsing( done in Base64 encoding) and analyzing tweets. 
+Challenge was in cleaning and polarizing the sentiments
+1) API Authentication is not shown
+2) catch.error(x) :- This function catches any error if any while converting the alphabets of a string to lower case.
+3) cleanTweets(tweet, fun=catch.error):- Cleaning functions can be changed as per the requirement
+4) cleanTweetsAndRemoveNAs(Tweets) :- This function utilizes the cleanTweets function and also remove NA in the process.
+5) positive and negative world list was downloaded from http://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html . Note that financial positive and negative 
+lexicon is different from general one here and this was the motivation for me to built my own financial lexicon later on. 
+Note that industry specific terms can be added like for Cab industry negative words are “wait”, “waiting” etc.
+6) getSentimentScore(sentences,words.positive=pos.words,words.negative=neg.words,.progress='none'):-
+Self explainatory- counts of positive and negative words were collected and then difference between them gave the score.
+7) Using “sentiment” package polarizing of the sentiment can be done .
+8) A bag of words can be created for the Cab Industry. These words can be later used to guard cab provider(or any other industry) 
+prevent fraudulent repetition of these words.(Improves Customer Response on Social Media)

@@ -1,0 +1,9 @@
+Stock Market Trends By News/Article Mined Data
+Objective:- Due to lack of dedicated financial lexicon which segments between negative and positive sentiments I decided to create one for my own. Note that the lexicon may be a little bias towards author style of writing, I am still working on it and hope to adjust for such bias.( :p )
+Code Flow:-
+1) Scrape Links:- url is already given in the body of the function ( remember author biasing..) . Top fifty stock’s News/Articles/Announcements were chosen as text.
+2) Stocks returns was used as a condition for words that may explain the return specific behavior i.e. Positive returns implies the corresponding text may indicate positive sentiments and vis-à-vis.
+3) quantmod package was used for obtaining stock prices of Indian Stock Market.
+4) A list of commonly used nouns/pronouns/adjective etc. was collected. This was used to remove repetitive words in common literature.[ A step towards adjustment for bias].
+5) corpus() :- Function is self- explanatory. Main challenge was to prevent the code from failing as economic times identified my IP and would send warnings instead of text, but I still continued using acad as an excuse :P , successfully found a way out.
+6) What follows is basic data munging and manipulation.

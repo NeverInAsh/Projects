@@ -1,0 +1,13 @@
+Movie Recommender System:-
+Objective:- To understand and learn basics of recommender systems. Pearson correlation score was used as it tends to give better results in situation where data 
+isn’t well normalized.
+Note that data format is quite important
+Code flows as follows :-
+1) simDistance(x,p1,p2) :- This function is used to find person correlation score between the movie choices of two persons.
+2) topMatches(x,person,top,similarity=simDistance)/ topMatches2(x,person,similarity=simDistance) :-
+This function is used to give top or total matches ordered by similarity score. This function can be exploited to draw graph network of the concerned person. 
+So based on mod(diff b/w pearson score) a basic graph can be drawn. A weighted graph with weights being the pearson score can also be done.
+3) recoItem(x,item=movies,similarity=topMatches2,person) :- This function is a basic recommendation algorithm.
+4) changeform(x) :- Primarily reco systems are user or customer centric i.e. recommending item based on similarity score amongst the crowd. 
+But recommendation is product centric then it can help the service provider to select and buy only the movies which are more likely to be watched 
+movies[Segmentation based on demographics can be done to further better the model..]. This will improve the bottomline(profits).

@@ -1,0 +1,29 @@
+*************Neural Network as a Image Enhancement Technique**************
+Image can either be smoothed or synthesized, so that is where neural nets come in they are
+used in designing of filters which reduce noise and helps in edge detection. These filters
+are can be effectively used to remove the mixed Gaussian and impulsive noises and sharpen
+the edges.
+
+Tentative Date:- by June 2016
+
+*************Image Based Search Engine***************
+
+This project is in ideation stage.
+Objective:- To build a basic Content based search engine.Due to vast variety of content 
+available it sometimes becomes difficult to search through endless pages just to get that
+one particular type of content. This can be music, software files or even images.
+
+I plan to implement this content based search engine on 'Images'
+
+Features will be as follows:- 
+1) Category/Context of Image:- Like a person, place, object, food etc.
+2) Color Scheme:- Color makes the image take values in a color vector space. There can not
+be any universal color system as each color system has its own parameters.Some can be
+Intensity, Hue, Saturation, RGB( This will be very useful in classifying the images.)	
+3) Shape:- detect and classify the physical nature of edges in images using reflectance 
+information, to compute edges automatic gradient thresholding can be used.
+**Grouping Data**
+When searching for an object, it would be most advantageous to do a complete
+object segmentation first.
+
+By: July 2017
