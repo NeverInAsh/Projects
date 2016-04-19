@@ -1,5 +1,5 @@
-#install.packages('stochvol')
-library(stochvol); library(foreach)
+install.packages('fNonlinear')
+library(fNonlinear); library(foreach); library(TTR)
 data.dir <- '~/DRM/Data/'
 #Variable for no of years
 Year <- 14:0
@@ -35,6 +35,8 @@ foreach(i = seq_along(Year))%do%{
   FX.df[i,'Yen.Q4'] <- mean(fx.rate[which(fx.rate$Quarter=='Q4'& fx.rate$Year==Year[i]),'Yen'])
 
 }
+rownames(FX.df) <- NULL
+FX.df <- cbind(Year=2014:2000,FX.df)
 rm(fx.rate)
 #Importing WPI Index Data with base year 1993-1994(due to unavailability of a data
 #a factor of 1.866 is used to change the base value)
@@ -51,8 +53,91 @@ foreach(i = seq_along(Year))%do%{
   WPI.df[i,'WPI.Q3'] <- mean(WPI[which(WPI$Quarter=='Q3' & WPI$Year==Year[i]),'WPI.Index'])
   WPI.df[i,'WPI.Q4'] <- mean(WPI[which(WPI$Quarter=='Q4' & WPI$Year==Year[i]),'WPI.Index'])
 }
+rownames(WPI.df) <- NULL
+WPI.df <- cbind(Year=2014:2000,WPI.df)
 
 #Next we are going to take GDP(@ factor cost) we will base the values 
 #on 2004-2005 due to unavailability of data
 GDP.df <- read.csv(paste0(data.dir,'GDP.csv'),stringsAsFactors = F)
+GDP.df <- GDP.df[1:15,1:5]
 
+#Call Money Market Rate
+RATE.df <- read.csv(paste0(data.dir,'Market_Rate.csv'),stringsAsFactors = F)
+RATE.df <- RATE.df[,1:5]
+final.df.Q1 <- cbind(FX.df$USD.Q1,RATE.df$Rate.Q1,WPI.df$WPI.Q1,GDP.df$GDP.Q1)
+final.df.Q2 <- cbind(FX.df$USD.Q2,RATE.df$Rate.Q2,WPI.df$WPI.Q2,GDP.df$GDP.Q2)
+final.df.Q3 <- cbind(FX.df$USD.Q3,RATE.df$Rate.Q3,WPI.df$WPI.Q3,GDP.df$GDP.Q3)
+final.df.Q4 <- cbind(FX.df$USD.Q4,RATE.df$Rate.Q4,WPI.df$WPI.Q4,GDP.df$GDP.Q4)
+final.df <- rbind(final.df.Q1,final.df.Q2,final.df.Q3,final.df.Q4)
+colnames(final.df) <- c('FX.Rate', 'Rate', 'WPI', 'GDP')
+#Now after Data Preparation and Processing is done
+
+#Volatility and Non-Linearity Tests
+
+#BDS Test for Non-Linearity
+#The bdsTest test examines the spatial dependence of the observed 
+#series. To do this, the series is embedded in m-space and the 
+#dependence of x is examined by counting near points. Points for
+#which the distance is less than eps are called near. The BDS test 
+#statistic is asymptotically standard Normal
+
+bdsTest(final.df[,1], m = 3, eps = NULL, title = NULL, description = NULL)
+
+
+volatility(final.df[,1],calc="close")
+
+
+
+#Artificial Neural Networks
+library(neuralnet)
+scaled.df <- function(data){
+  maxs <- apply(data, 2, max) 
+  mins <- apply(data, 2, min)
+  scaled <- as.data.frame(scale(data, center = mins, scale = maxs - mins))
+  #Reserving 80% for training my data and 20% for testing
+  train <- scaled[13:60,]
+  test <- scaled[1:12,]
+  colnames(train) <- c('FX.Rate', 'Rate', 'WPI', 'GDP')
+  colnames(test) <- c('FX.Rate', 'Rate', 'WPI', 'GDP')
+  list(Train = train, Test = test)
+}
+#Q1 <- scaled.df(final.df.Q1)
+#Q2 <- scaled.df(final.df.Q2)
+#Q3 <- scaled.df(final.df.Q3)
+#Q4 <- scaled.df(final.df.Q4)
+final <- scaled.df(final.df)
+#rm(final.df.Q4,final.df.Q3,final.df.Q2,final.df.Q1)
+# Colnames
+n <- c('FX.Rate', 'Rate', 'WPI', 'GDP')
+f <- as.formula(paste("FX.Rate ~", 
+                      paste(n[!n %in% "FX.Rate"], collapse = " + ")))
+
+nn <- neuralnet(f,data=final$Train,hidden=c(30,20),linear.output=T)
+plot(nn)
+#The black lines show the connections between each layer and the 
+#weights on each connection while the blue lines show the bias term 
+#added in each step. 
+#The bias can be thought as the intercept of a linear model.
+
+#predicting for the years 2012,2013,2014
+pr.nn <- compute(nn,final$Test[,2:4])
+
+MSE.nn <- mean(pr.nn$net.result-final$Test[,1])^2
+#Since  data is less we can't conclude anything with such small amount of data
+lm.fit <- lm(f,data = final$Train)
+lm.predict <- predict(lm.fit, final$Test[,2:4])
+MSE.lm <- mean(lm.predict-final$Test[,1])^2
+summary(lm.fit)
+#It turns out that MSE of linear model is ~10 times that of a neural net
+
+plot(pr.nn$net.result,final$Test[,1],
+     main = 'Relationship B/W Nnet Pred and Actual Values',
+     xlab = 'Predicted Neural Network Values',
+     ylab = 'Actual Values')
+lines(final$Test[,1],final$Test[,1], col='green')
+
+plot(lm.predict,final$Test[,1],
+     main = 'Relationship B/W Linear Model Pred and Actual Values',
+     xlab = 'Predicted Neural Network Values',
+     ylab = 'Actual Values')
+lines(final$Test[,1],final$Test[,1], col='green')
